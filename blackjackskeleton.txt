@@ -2,17 +2,9 @@ Choose how many decks
 Choose number of players excluding dealer
 Shuffle deck(s)
 Deal two cards to each player and dealer in a round fashion
-for each player:
-    if player has blackjack:
-        if dealer has blackjack:
-            no one wins
-            dont play
-        else:
-            player wins and bonus
-            dont play
 play:
     ## First turn
-    if dealer < 21:
+    if dealer > 21:
         if dealer has an ace whose value is 11:
             turn that ace soft
         else:
@@ -23,7 +15,7 @@ play:
     else if (dealer >= 17) & (dealer is not soft):
         dealer stands
     for each player
-        if player < 21:
+        if player > 21:
             if player has an ace whose value is 11:
                 turn that ace soft
             else:
