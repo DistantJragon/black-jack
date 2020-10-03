@@ -1,4 +1,5 @@
 import random
+import math
 def is_string_integer(string):
     try: int(string)
     except ValueError: return False
@@ -17,8 +18,10 @@ def get_card_value_from_card_number(cardNumber):
     return value
 
 def get_card_from_id(id):
-    decknumber = id = id % 51
-    suitNumber = id = id % 12
+    decknumber = math.floor(id / 52)
+    id = id % 52
+    suitNumber = math.floor(id / 13)
+    id = id % 13
     cardNumber = id
     return decks[decknumber][suitNumber][cardNumber]
 
@@ -34,22 +37,31 @@ class Card:
         self.cardName = cardList[cardNumber]
         self.cardFullName = '{} of {}'.format(self.cardName, self.suitName)
 
-        self.cardID = (deckNumber * 51) + (suitNumber * 12) + cardNumber
+        self.cardID = (deckNumber * 52) + (suitNumber * 13) + cardNumber
         self.worth = get_card_value_from_card_number(cardNumber)
+        self.isFaceDown = False
     def softify(self):
         if self.suitNumber != 0: raise Exception('Tried to make a card that wasn\'t an ace soft')
         else:
             self.worth = 1
 
 class Player:
-    def __init__(self):
+    def __init__(self, isDealer = False):
         self.hand = []
         self.isSoft = False
+        self.worth = 0
+        self.isDealer = isDealer
     def check_soft(self):
         tempSoft = False
         for card in self.hand:
-            if card.worth == 11: tempSoft = True
+            if card.worth == 11: 
+                tempSoft = True
+                break
         self.isSoft = tempSoft
+    def check_worth_of_hand(self):
+        totalWorth = 0
+        for card in self.hand: totalWorth += card.worth
+        self.worth = totalWorth
 
 numberOfPlayers = 0
 while numberOfPlayers < 1:
@@ -86,6 +98,19 @@ for deck in range(numberOfDecks):
         for card in range(13):
             decks[deck][suit].append(Card(deck, suit, card))
 
+players = []
+for player in range(numberOfPlayers):
+    players.append(Player())
+players.append(Player(isDealer = True))
+
 numberOfAllOfTheCards = numberOfDecks * 52
 shuffledDeck = list(range(numberOfAllOfTheCards))
 random.shuffle(shuffledDeck)
+
+for i in range(2):
+    for player in players:
+        tempCard = get_card_from_id(shuffledDeck[-1])
+        if player.isDealer and i == 0:
+            tempCard.isFaceDown = True
+        player.hand.append(tempCard)
+        shuffledDeck.pop()
