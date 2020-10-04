@@ -181,7 +181,7 @@ while gameTime:
         if player.isDealer:
             if player.handWorth < 17 or (player.handWorth == 17 and player.handIsSoft):
                 player.choice = 'hit'
-            elif player.handWorth >= 17 and not(player.handIsSoft):
+            elif player.handWorth >= 17:
                 player.choice = 'stand'
 
         if player.choice == 'hit':
