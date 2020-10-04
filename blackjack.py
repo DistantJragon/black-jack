@@ -76,7 +76,6 @@ class Player:
 
 numberOfPlayers = 0
 while numberOfPlayers < 1:
-    numberOfPlayers = 0
     numberOfPlayers = input('Number of players: ')
     if is_string_integer(numberOfPlayers): numberOfPlayers = int(numberOfPlayers)
     else:
@@ -90,7 +89,6 @@ while numberOfPlayers < 1:
 
 numberOfDecks = 0
 while numberOfDecks < 1:
-    numberOfDecks = 0
     numberOfDecks = input('Number of decks: ')
     if is_string_integer(numberOfDecks): numberOfDecks = int(numberOfDecks)
     else:
@@ -208,7 +206,6 @@ while gameTime:
 
     if allPlayersStand:
         gameTime = False
-
         
     roundNumber += 1
 
@@ -227,6 +224,7 @@ for player in players:
                 print(currentPlayerString + 'wins and gets a bonus for having a blackjack')
             else:
                 print(currentPlayerString + 'wins with' + currentPlayerHandWorthString)
+            continue
         elif player.handWorth < 21:
             if player.handWorth > dealer.handWorth or dealer.handWorth > 21:
                 print(currentPlayerString + 'wins with' + currentPlayerHandWorthString)
