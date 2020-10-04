@@ -138,6 +138,7 @@ while gameTime:
         player.check_worth_of_hand()
 
         if roundNumber == 0 and player.handWorth == 21: player.hasBlackjack = True
+        if roundNumber == 1: dealer.hand[0].isFaceDown = False
 
         if not(player.isDealer):
             print('-------------------')
@@ -152,8 +153,6 @@ while gameTime:
             print('Your Hand:')
             for card in player.hand: print(card.full_name())
             print('')
-
-        if roundNumber == 0: dealer.hand[0].isFaceDown = False
 
         while player.handWorth > 21 and player.handIsSoft:
             for card in player.hand:
