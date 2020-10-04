@@ -18,9 +18,9 @@ def get_card_value_from_card_number(cardNumber):
     return value
 
 def get_card_from_id(id):
-    decknumber = math.floor(id / 52)
+    decknumber = id // 52
     id = id % 52
-    suitNumber = math.floor(id / 13)
+    suitNumber = id // 13
     id = id % 13
     cardNumber = id
     return decks[decknumber][suitNumber][cardNumber]
@@ -52,18 +52,17 @@ class Card:
         return tempCardFullName
 
 class Player:
-    def __init__(self, isDealer = False):
+    def __init__(self, playerNumber, isDealer = False):
         self.isDealer = isDealer
+        self.playerNumber = playerNumber
 
         self.hand = []
         self.handIsSoft = False
         self.handWorth = 0
+        self.hasBlackjack = False
 
         self.choice = ''
-        self.canChooseNow = True
-        self.hasAbilityToChoose = True
-        if self.isDealer:
-            self.hasAbilityToChoose = False
+        self.isBust = False
     def check_soft(self):
         tempSoft = False
         for card in self.hand:
@@ -74,7 +73,7 @@ class Player:
     def check_worth_of_hand(self):
         totalWorth = 0
         for card in self.hand: totalWorth += card.worth
-        self.worth = totalWorth
+        self.handWorth = totalWorth
 
 numberOfPlayers = 0
 while numberOfPlayers < 1:
@@ -85,7 +84,7 @@ while numberOfPlayers < 1:
         print('Has to be a natural number')
         numberOfPlayers = 0
         continue
-    if is_integer_natural(numberOfPlayers) == False:
+    if not(is_integer_natural(numberOfPlayers)):
         print('Has to be a natural number')
         numberOfPlayers = 0
 
@@ -99,9 +98,10 @@ while numberOfDecks < 1:
         print('Has to be a natural number')
         numberOfDecks = 0
         continue
-    if is_integer_natural(numberOfPlayers) == False:
+    if not(is_integer_natural(numberOfPlayers)):
         print('Has to be a natural number')
         numberOfDecks = 0
+print('')
 
 decks = []
 for deck in range(numberOfDecks):
@@ -112,9 +112,10 @@ for deck in range(numberOfDecks):
             decks[deck][suit].append(Card(deck, suit, card))
 
 players = []
-for player in range(numberOfPlayers):
-    players.append(Player())
-players.append(Player(isDealer = True))
+for playerNumber in range(numberOfPlayers):
+    players.append(Player(playerNumber = playerNumber))
+players.append(Player(playerNumber = playerNumber, isDealer = True))
+dealer = players[-1]
 
 numberOfAllOfTheCards = numberOfDecks * 52
 shuffledDeck = list(range(numberOfAllOfTheCards))
@@ -125,18 +126,25 @@ for i in range(2):
         tempCard = get_card_from_id(shuffledDeck[-1])
         player.hand.append(tempCard)
         shuffledDeck.pop()
-players[-1].hand[0].isFaceDown = True
+dealer.hand[0].isFaceDown = True
 
 gameTime = True
 roundNumber = 0
 while gameTime:
+    choiceList = []
+
     for player in players:
         player.check_soft()
         player.check_worth_of_hand()
 
-        if player.isDealer == False:
+        if roundNumber == 0 and player.handWorth == 21: player.hasBlackjack = True
+
+        if not(player.isDealer):
+            print('-------------------')
+            print('Player {}\'s turn'.format(player.playerNumber + 1))
+            print('-------------------')
             print('Dealer\'s Hand:')
-            for card in players[-1].hand:
+            for card in dealer.hand:
                 if card.isFaceDown == True: print('*Face Down*')
                 else: print(card.full_name())
             print('')
@@ -145,19 +153,87 @@ while gameTime:
             for card in player.hand: print(card.full_name())
             print('')
 
+        if roundNumber == 0: dealer.hand[0].isFaceDown = False
+
         while player.handWorth > 21 and player.handIsSoft:
             for card in player.hand:
                 if card.worth == 11:
                     card.worth = 1
-                    if player.isDealer == False: print('Your first soft ace must harden to keep you in the game')
+                    if not(player.isDealer): print('Your first soft ace must harden to keep you in the game')
                     player.check_soft()
                     player.check_worth_of_hand()
 
-                    if player.isDealer == False:
+                    if not(player.isDealer):
                         print('Your Hand:')
                         for card in player.hand: print(card.full_name())
                         print('')
-        if player.handWorth > 21 and player.handIsSoft == False:
-            if player.isDealer == False: print('Your hand exceeds 21 and you don\'t have a soft ace. You are bust')
-            player.hasAbilityToChoose = False
+                    break
+
+        if player.handWorth > 21 and not(player.handIsSoft):
+            if not(player.isDealer): print('Your hand exceeds 21 and you don\'t have a soft ace. You are bust')
+            player.isBust = True
+
+        if not(player.isDealer) and not(player.isBust):
+            while not(player.choice == 'stand') and not(player.choice == 'hit'):
+                player.choice = input('Hit or stand: ').lower()
+                if not(player.choice == 'stand') and not(player.choice == 'hit'): print('Invalid input')
+
+        if player.isBust == True:
+            player.choice = 'stand'
+
+        if player.isDealer:
+            if player.handWorth < 17 or (player.handWorth == 17 and player.handIsSoft):
+                player.choice = 'hit'
+            elif player.handWorth >= 17 and not(player.handIsSoft):
+                player.choice = 'stand'
+
+        if player.choice == 'hit':
+            tempCard = get_card_from_id(shuffledDeck[-1])
+            player.hand.append(tempCard)
+            shuffledDeck.pop()
+            if player.isDealer: print('Dealer draws a(n) {}'.format(tempCard.full_name()))
+            else: print('Player {} hits'.format(player.playerNumber + 1))
+            player.hasBlackjack = False
+
+        if player.choice == 'stand':
+            if player.isDealer: print('Dealer stands')
+            else: print('Player {} stands'.format(player.playerNumber + 1))
+        print('')
+
+        choiceList.append(player.choice)
+        player.choice = ''
+
+    allPlayersStand = True
+    for choice in choiceList:
+        if choice == 'hit':
+            allPlayersStand = False
+
+    if allPlayersStand:
+        gameTime = False
+
+        
     roundNumber += 1
+
+print('Dealer ended with a hand totaling {}'.format(dealer.handWorth))
+for player in players:
+    if not(player.isDealer):
+        currentPlayerString = 'Player {} '.format(player.playerNumber + 1)
+        currentPlayerHandWorthString = ' {}'.format(player.handWorth)
+        if player.isBust:
+            print(currentPlayerString + 'loses with' + currentPlayerHandWorthString)
+            continue
+        if player.handWorth == 21:
+            if dealer.handWorth == 21:
+                print(currentPlayerString + 'pushes')
+            elif player.hasBlackjack:
+                print(currentPlayerString + 'wins and gets a bonus for having a blackjack')
+            else:
+                print(currentPlayerString + 'wins with' + currentPlayerHandWorthString)
+        elif player.handWorth < 21:
+            if player.handWorth > dealer.handWorth or dealer.handWorth > 21:
+                print(currentPlayerString + 'wins with' + currentPlayerHandWorthString)
+            elif player.handWorth == dealer.handWorth:
+                print(currentPlayerString + 'pushes')
+            elif player.handWorth < dealer.handWorth:
+                print(currentPlayerString + 'loses with' + currentPlayerHandWorthString)
+print('The game lasted {} rounds'.format(roundNumber + 1))
