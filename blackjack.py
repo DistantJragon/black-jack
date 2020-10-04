@@ -1,5 +1,4 @@
 import random
-import math
 def is_string_integer(string):
     try: int(string)
     except ValueError: return False
