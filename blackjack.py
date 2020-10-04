@@ -130,6 +130,7 @@ roundNumber = 0
 while gameTime:
     choiceList = []
 
+    print('Round #{}'.format(roundNumber + 1))
     for player in players:
         player.check_soft()
         player.check_worth_of_hand()
@@ -206,8 +207,8 @@ while gameTime:
 
     if allPlayersStand:
         gameTime = False
-        
-    roundNumber += 1
+
+    if gameTime: roundNumber += 1
 
 print('Dealer ended with a hand totaling {}'.format(dealer.handWorth))
 for player in players:
