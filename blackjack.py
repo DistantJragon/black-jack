@@ -1,4 +1,9 @@
 import random
+## Game vars
+informPlayerOfHardeningAce = False
+numberOfPlayers = 0 ## Set to 0 for players to choose
+numberOfDecks = 0 ## Set to 0 for players to choose
+
 def is_string_integer(string):
     try: int(string)
     except ValueError: return False
@@ -44,7 +49,7 @@ class Card:
         else:
             self.worth = 1
     def full_name(self):
-        if self.cardNumber == 0:
+        if self.cardNumber == 0 and informPlayerOfHardeningAce:
             if self.worth == 11: self.textureName = ' (Soft)'
             elif self.worth == 1: self.textureName = ' (Hard)' 
         tempCardFullName = '{} of {}{}'.format(self.cardName, self.suitName, self.textureName)
@@ -74,7 +79,6 @@ class Player:
         for card in self.hand: totalWorth += card.worth
         self.handWorth = totalWorth
 
-numberOfPlayers = 0
 while numberOfPlayers < 1:
     numberOfPlayers = input('Number of players: ')
     if is_string_integer(numberOfPlayers): numberOfPlayers = int(numberOfPlayers)
@@ -86,8 +90,6 @@ while numberOfPlayers < 1:
         print('Has to be a natural number')
         numberOfPlayers = 0
 
-
-numberOfDecks = 0
 while numberOfDecks < 1:
     numberOfDecks = input('Number of decks: ')
     if is_string_integer(numberOfDecks): numberOfDecks = int(numberOfDecks)
@@ -156,11 +158,11 @@ while gameTime:
             for card in player.hand:
                 if card.worth == 11:
                     card.worth = 1
-                    if not(player.isDealer): print('Your first soft ace must harden to keep you in the game')
+                    if not(player.isDealer) and informPlayerOfHardeningAce: print('Your first soft ace must harden to keep you in the game')
                     player.check_soft()
                     player.check_worth_of_hand()
 
-                    if not(player.isDealer):
+                    if not(player.isDealer) and informPlayerOfHardeningAce:
                         print('Your Hand:')
                         for card in player.hand: print(card.full_name())
                         print('')
