@@ -1,8 +1,8 @@
 import random
 ## Game vars
 informPlayerOfHardeningAce = False
-numberOfPlayers = 0 ## Set to 0 for players to choose
-numberOfDecks = 0 ## Set to 0 for players to choose
+defaultNumberOfPlayers = 0 ## Set to 0 for players to choose
+defaultNumberOfDecks = 0 ## Set to 0 for players to choose
 
 def is_string_integer(string):
     try: int(string)
@@ -79,6 +79,7 @@ class Player:
         for card in self.hand: totalWorth += card.worth
         self.handWorth = totalWorth
 
+numberOfPlayers = defaultNumberOfPlayers
 while numberOfPlayers < 1:
     numberOfPlayers = input('Number of players: ')
     if is_string_integer(numberOfPlayers): numberOfPlayers = int(numberOfPlayers)
@@ -90,6 +91,7 @@ while numberOfPlayers < 1:
         print('Has to be a natural number')
         numberOfPlayers = 0
 
+numberOfDecks = defaultNumberOfDecks
 while numberOfDecks < 1:
     numberOfDecks = input('Number of decks: ')
     if is_string_integer(numberOfDecks): numberOfDecks = int(numberOfDecks)
