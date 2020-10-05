@@ -1,3 +1,4 @@
+#lol
 import random
 def is_string_integer(string):
     try: int(string)
