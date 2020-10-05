@@ -177,6 +177,8 @@ while gameTime:
         if not(player.isDealer) and not(player.isBust):
             while not(player.choice == 'stand') and not(player.choice == 'hit'):
                 player.choice = input('Hit or stand: ').lower()
+                if player.choice == 'h': player.choice = 'hit'
+                if player.choice == 's': player.choice = 'stand'
                 if not(player.choice == 'stand') and not(player.choice == 'hit'): print('Invalid input')
 
         if player.isBust == True: player.choice = 'stand'
