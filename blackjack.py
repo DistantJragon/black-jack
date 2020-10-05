@@ -175,20 +175,19 @@ while gameTime:
                 player.choice = input('Hit or stand: ').lower()
                 if not(player.choice == 'stand') and not(player.choice == 'hit'): print('Invalid input')
 
-        if player.isBust == True:
-            player.choice = 'stand'
+        if player.isBust == True: player.choice = 'stand'
 
         if player.isDealer:
-            if player.handWorth < 17 or (player.handWorth == 17 and player.handIsSoft):
-                player.choice = 'hit'
-            elif player.handWorth >= 17:
-                player.choice = 'stand'
+            if player.handWorth < 17 or (player.handWorth == 17 and player.handIsSoft): player.choice = 'hit'
+            elif player.handWorth >= 17: player.choice = 'stand'
 
         if player.choice == 'hit':
             tempCard = get_card_from_id(shuffledDeck[-1])
             player.hand.append(tempCard)
             shuffledDeck.pop()
-            if player.isDealer: print('Dealer draws a(n) {}'.format(tempCard.full_name()))
+            if player.isDealer: 
+                if tempCard.cardName == '8' or tempCard.cardName == 'Ace': print('Dealer draws an {}'.format(tempCard.full_name()))
+                else: print('Dealer draws a {}'.format(tempCard.full_name()))
             else: print('Player {} hits'.format(player.playerNumber + 1))
             player.hasBlackjack = False
 
@@ -202,12 +201,9 @@ while gameTime:
 
     allPlayersStand = True
     for choice in choiceList:
-        if choice == 'hit':
-            allPlayersStand = False
-
-    if allPlayersStand:
-        gameTime = False
-
+        if choice == 'hit': allPlayersStand = False
+    if allPlayersStand: gameTime = False
+    
     if gameTime: roundNumber += 1
 
 print('Dealer ended with a hand totaling {}'.format(dealer.handWorth))
